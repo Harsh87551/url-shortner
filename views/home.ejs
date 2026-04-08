@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <style>
+        :root {
+            --bg-start: #070a1e;
+            --bg-end: #10162f;
+            --panel: rgba(15, 23, 42, 0.95);
+            --panel-border: rgba(255, 255, 255, 0.12);
+            --text: #e8edf8;
+            --muted: #9bb0d6;
+            --accent: #2dd4ff;
+            --accent-alt: #8b5cf6;
+            --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at top left, rgba(45, 212, 255, 0.08), transparent 20%),
+                        radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.14), transparent 18%),
+                        linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(45, 212, 255, 0.12), transparent 18%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.12), transparent 14%),
+                        radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.04), transparent 24%);
+            pointer-events: none;
+        }
+
+        .hero {
+            width: 100%;
+            max-width: 680px;
+            padding: 52px;
+            border-radius: 32px;
+            background: rgba(8, 14, 32, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+
+        .hero::before,
+        .hero::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .hero::before {
+            width: 260px;
+            height: 260px;
+            top: -80px;
+            right: -90px;
+            background: rgba(45, 212, 255, 0.25);
+        }
+
+        .hero::after {
+            width: 200px;
+            height: 200px;
+            bottom: -80px;
+            left: -70px;
+            background: rgba(139, 92, 246, 0.22);
+        }
+
+        .hero-head {
+            margin-bottom: 38px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-accent {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+            border-radius: 999px;
+            padding: 10px 18px;
+            margin-bottom: 24px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .hero-accent span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+        }
+
+        .hero-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 18px;
+            border-radius: 26px;
+            background: rgba(45, 212, 255, 0.16);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 45px rgba(0, 0, 0, 0.18);
+            font-size: 32px;
+            color: var(--accent);
+            text-shadow: 0 0 26px rgba(45, 212, 255, 0.38);
+        }
+
+        .hero-title {
+            margin: 0;
+            font-size: clamp(2.3rem, 4vw, 3.8rem);
+            line-height: 1.02;
+            letter-spacing: -0.06em;
+            background: linear-gradient(90deg, var(--accent), #7c4dff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .hero-copy {
+            margin: 16px auto 0;
+            max-width: 520px;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.75;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .stat-chip {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .form-panel {
+            margin-top: 40px;
+            background: rgba(11, 17, 39, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 26px;
+            padding: 34px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.16);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 14px;
+            color: var(--muted);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            font-size: 0.98rem;
+        }
+
+        .input-wrap {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 18px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+
+        .input-wrap input:focus {
+            outline: none;
+            border-color: rgba(45, 212, 255, 0.6);
+            box-shadow: 0 0 0 4px rgba(45, 212, 255, 0.14);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-wrap input::placeholder {
+            color: rgba(255, 255, 255, 0.52);
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 32px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), #4f46e5);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.2s ease;
+            box-shadow: 0 18px 32px rgba(13, 60, 115, 0.32);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+            background: linear-gradient(135deg, #00c8ff, #5f5ee8);
+            box-shadow: 0 24px 46px rgba(13, 60, 115, 0.36);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit::after {
+            content: '→';
+            margin-left: 10px;
+            opacity: 0.9;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-submit:hover::after {
+            transform: translateX(3px);
+        }
+
+        .generated-url {
+            margin: 0 0 28px 0;
+            padding: 18px 22px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(45, 212, 255, 0.12), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(45, 212, 255, 0.35);
+            box-shadow: 0 8px 24px rgba(45, 212, 255, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            color: var(--accent);
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.6;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .generated-url::before {
+            content: '✓';
+            display: inline-block;
+            margin-right: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        .generated-url a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .generated-url a:hover {
+            background: rgba(45, 212, 255, 0.15);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 680px) {
+            .hero {
+                padding: 34px 24px;
+            }
+
+            .input-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-submit {
+                width: 100%;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <% if(locals.id) { %>
+        <p class="generated-url">Your short URL: <a href="http://localhost:3000/url/<%= id %>" target="_blank">http://localhost:3000/url/<%= id %></a></p>
+        <%} %>
+            <div class="hero-icon" style="display: flex; align-items: center; justify-content: center; font-size: 2rem;">🔗</div>
+        <header class="hero-head">
+            <div class="hero-accent"><span>Live Link Builder</span> • Simple, secure, instant</div>
+            <h1 class="hero-title">URL Shortener</h1>
+            <p class="hero-copy">Transform long, messy links into short, memorable URLs that are easy to share and fast to load.</p>
+            <div class="stats">
+                <div class="stat-chip">Fast generation</div>
+                <div class="stat-chip">Secure redirects</div>
+                <div class="stat-chip">Minimal interface</div>
+            </div>
+        </header>
+
+        <div class="form-panel">
+            <form method="POST" action="/url">
+                <label class="form-label" for="url">Original website URL</label>
+                <div class="input-wrap">
+                    <input type="text" name="url" placeholder="https://example.com" required>
+                    <button class="btn-submit" type="submit">Generate Short URL</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>
