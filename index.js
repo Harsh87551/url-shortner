@@ -12,7 +12,7 @@ const port = 3000;
 app.set("view engine", "ejs");
 app.set("views" , path.resolve("./views"));
 
-connectToMongoDB("mongodb://127.0.0.1:27017/url-shortner")
+connectToMongoDB("mongodb+srv://hr555724_db_user:0xdRDsAG2IvV9rfg@cluster0.tpajmj7.mongodb.net/?appName=Cluster0")
 .then (() => console.log("connected to the Mongo DB database"));
 
 app.use(express.json());
