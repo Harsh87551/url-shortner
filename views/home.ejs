@@ -308,16 +308,101 @@
                 padding: 34px 24px;
             }
 
+            .hero::before {
+                width: 200px;
+                height: 200px;
+                top: -60px;
+                right: -70px;
+            }
+
+            .hero::after {
+                width: 170px;
+                height: 170px;
+                bottom: -60px;
+                left: -50px;
+            }
+
+            .hero-icon {
+                width: 72px;
+                height: 72px;
+                font-size: 1.8rem;
+            }
+
+            .hero-title {
+                font-size: clamp(2rem, 8vw, 3.2rem);
+            }
+
+            .hero-copy {
+                max-width: 100%;
+            }
+
+            .form-panel {
+                padding: 28px 24px;
+            }
+
             .input-wrap {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .input-wrap input {
+                min-width: 0;
             }
 
             .btn-submit {
                 width: 100%;
             }
 
+            .btn-submit,
+            .input-wrap input {
+                font-size: 1rem;
+            }
+
             .stats {
                 justify-content: center;
+                gap: 10px;
+            }
+
+            .generated-url {
+                padding: 16px 18px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 20px;
+            }
+
+            .hero {
+                padding: 28px 20px;
+                border-radius: 24px;
+            }
+
+            .hero-icon {
+                width: 64px;
+                height: 64px;
+            }
+
+            .hero-accent {
+                padding: 10px 16px;
+            }
+
+            .hero-copy {
+                font-size: 0.96rem;
+                line-height: 1.8;
+            }
+
+            .form-panel {
+                padding: 24px 20px;
+            }
+
+            .input-wrap {
+                gap: 12px;
+            }
+
+            .stats {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -326,7 +411,7 @@
     <section class="hero">
         <% if(locals.id) { %>
         <p class="generated-url">Your short URL: <a href="https://url-shortner-harsh.onrender.com/url/<%= id %>" target="_blank">https://url-shortner-harsh.onrender.com/url/<%= id %></a></p>
-        <%} %>
+        <% } %>
             <div class="hero-icon" style="display: flex; align-items: center; justify-content: center; font-size: 2rem;">🔗</div>
         <header class="hero-head">
             <div class="hero-accent"><span>Live Link Builder</span> • Simple, secure, instant</div>
